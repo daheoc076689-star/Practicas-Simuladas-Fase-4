@@ -227,3 +227,50 @@ class Reserva(Entidad):
             f"Servicio: {self.servicio.nombre} | Duración: {self.duracion} | "
             f"Estado: {self.estado} | Costo: ${self.costo:,.0f}"
         )
+
+# GESTOR DEL SISTEMA: LISTAS INTERNAS, REGISTRO Y OPERACIONES
+
+class SistemaFJ:
+    """Administra clientes, servicios y reservas usando listas en memoria."""
+
+    def __init__(self):
+        self.clientes = []
+        self.servicios = []
+        self.reservas = []
+
+    def registrar_cliente(self, cliente):
+        if not isinstance(cliente, Cliente):
+            raise DatosInvalidosError("El objeto no corresponde a un cliente.")
+        if any(c.identificador == cliente.identificador for c in self.clientes):
+            raise DatosInvalidosError("Ya existe un cliente con ese identificador.")
+        self.clientes.append(cliente)
+        logging.info("Cliente registrado: %s.", cliente.identificador)
+        return cliente
+
+    def registrar_servicio(self, servicio):
+        if not isinstance(servicio, Servicio):
+            raise DatosInvalidosError("El objeto no corresponde a un servicio.")
+        if any(s.identificador == servicio.identificador for s in self.servicios):
+            raise DatosInvalidosError("Ya existe un servicio con ese identificador.")
+        self.servicios.append(servicio)
+        logging.info("Servicio registrado: %s.", servicio.identificador)
+        return servicio
+
+    def crear_reserva(self, identificador, cliente, servicio, duracion):
+        reserva = Reserva(identificador, cliente, servicio, duracion)
+        if any(r.identificador == identificador for r in self.reservas):
+            raise DatosInvalidosError("Ya existe una reserva con ese identificador.")
+        self.reservas.append(reserva)
+        logging.info("Reserva creada: %s.", identificador)
+        return reserva
+
+    def listar_datos(self):
+        print("\n--- CLIENTES ---")
+        for cliente in self.clientes:
+            print(cliente.mostrar_informacion())
+        print("\n--- SERVICIOS ---")
+        for servicio in self.servicios:
+            print(servicio.mostrar_informacion())
+        print("\n--- RESERVAS ---")
+        for reserva in self.reservas:
+            print(reserva.mostrar_informacion())
