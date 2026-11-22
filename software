@@ -92,3 +92,41 @@ class Cliente(Entidad):
             f"Cliente: {self.__nombre} | ID: {self.identificador} | "
             f"Correo: {self.__correo} | Teléfono: {self.__telefono}"
         )
+
+# CLASE ABSTRACTA SERVICIO
+
+class Servicio(Entidad):
+    """Clase base para los diferentes servicios ofrecidos por Software FJ."""
+
+    def __init__(self, identificador, nombre, tarifa, disponible=True):
+        super().__init__(identificador)
+        if not nombre or not nombre.strip():
+            raise DatosInvalidosError("El nombre del servicio es obligatorio.")
+        if not isinstance(tarifa, (int, float)) or tarifa <= 0:
+            raise DatosInvalidosError("La tarifa debe ser un número mayor que cero.")
+
+        self.nombre = nombre.strip()
+        self.tarifa = float(tarifa)
+        self.disponible = bool(disponible)
+
+    @abstractmethod
+    def calcular_costo(self, duracion, impuesto=0, descuento=0):
+        """Calcula el costo según las reglas del servicio."""
+        pass
+
+    @abstractmethod
+    def describir(self):
+        """Devuelve la descripción del servicio."""
+        pass
+
+    def validar_parametros(self, duracion):
+        if not isinstance(duracion, (int, float)) or duracion <= 0:
+            raise DatosInvalidosError("La duración debe ser un número mayor que cero.")
+        if not self.disponible:
+            raise ServicioNoDisponibleError(
+                f"El servicio '{self.nombre}' no se encuentra disponible."
+            )
+
+    def mostrar_informacion(self):
+        estado = "Disponible" if self.disponible else "No disponible"
+        return f"{self.nombre} - Tarifa: ${self.tarifa:,.0f} - {estado}"
