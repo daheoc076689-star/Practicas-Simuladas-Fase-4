@@ -389,3 +389,11 @@ def ejecutar_demostracion():
         print("Conversión realizada correctamente:", valor)
     finally:
         print("La validación terminó y el programa continúa.")
+
+ # Listado final.
+    sistema.listar_datos()
+    print("\nLa demostración finalizó sin detener el programa.")
+    print("Los eventos y errores quedaron registrados en software_fj.log.")
+
+if __name__ == "__main__":
+    ejecutar_demostracion()
