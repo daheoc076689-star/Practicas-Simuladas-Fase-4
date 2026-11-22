@@ -54,3 +54,41 @@ class Entidad(ABC):
     def mostrar_informacion(self):
         """Cada entidad concreta debe implementar este método."""
         pass
+
+# CLASE CLIENTE
+
+class Cliente(Entidad):
+    """Almacena los datos básicos de un cliente con atributos encapsulados."""
+
+    def __init__(self, identificador, nombre, correo, telefono):
+        super().__init__(identificador)
+
+        # Se validan los datos antes de almacenarlos.
+        if not nombre or not nombre.strip():
+            raise DatosInvalidosError("El nombre del cliente es obligatorio.")
+        if not correo or "@" not in correo or "." not in correo.split("@")[-1]:
+            raise DatosInvalidosError("El correo electrónico no tiene un formato válido.")
+        if not telefono or not telefono.strip() or not telefono.replace("+", "").isdigit():
+            raise DatosInvalidosError("El teléfono debe contener números y puede iniciar con +.")
+
+        self.__nombre = nombre.strip()
+        self.__correo = correo.strip().lower()
+        self.__telefono = telefono.strip()
+
+    @property
+    def nombre(self):
+        return self.__nombre
+
+    @property
+    def correo(self):
+        return self.__correo
+
+    @property
+    def telefono(self):
+        return self.__telefono
+
+    def mostrar_informacion(self):
+        return (
+            f"Cliente: {self.__nombre} | ID: {self.identificador} | "
+            f"Correo: {self.__correo} | Teléfono: {self.__telefono}"
+        )
