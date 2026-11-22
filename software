@@ -274,3 +274,118 @@ class SistemaFJ:
         print("\n--- RESERVAS ---")
         for reserva in self.reservas:
             print(reserva.mostrar_informacion())
+
+# DEMOSTRACIÓN DE OPERACIONES (MÁS DE 10 CASOS)
+
+def ejecutar_demostracion():
+    sistema = SistemaFJ()
+    print("=" * 65)
+    print("SISTEMA INTEGRAL DE GESTIÓN - SOFTWARE FJ")
+    print("Demostración de operaciones y manejo de excepciones")
+    print("=" * 65)
+
+    # Operación 1: registro correcto de cliente.
+    cliente1 = sistema.registrar_cliente(
+        Cliente("C001", "Laura Gómez", "laura@gmail.com", "3001234567")
+    )
+    print("\n1. Cliente válido registrado correctamente.")
+
+    # Operación 2: otro cliente válido.
+    cliente2 = sistema.registrar_cliente(
+        Cliente("C002", "Carlos Pérez", "carlos@hotmail.com", "3107654321")
+    )
+    print("2. Segundo cliente válido registrado.")
+
+    # Operación 3: intento de crear un cliente con correo inválido.
+    try:
+        Cliente("C003", "Andrés Ruiz", "correo_incorrecto", "3005551111")
+    except DatosInvalidosError as error:
+        print("3. Registro inválido controlado:", error)
+        logging.warning("Intento de registro de cliente inválido: %s", error)
+
+    # Operación 4: registrar servicio de sala.
+    sala = sistema.registrar_servicio(
+        ReservaSala("S001", "Sala de reuniones", 50000)
+    )
+    print("4. Servicio de reserva de sala registrado.")
+
+    # Operación 5: registrar alquiler de equipo.
+    equipo = sistema.registrar_servicio(
+        AlquilerEquipo("S002", "Computador portátil", 80000)
+    )
+    print("5. Servicio de alquiler de equipo registrado.")
+
+    # Operación 6: registrar asesoría.
+    asesoria = sistema.registrar_servicio(
+        AsesoriaEspecializada("S003", "Asesoría de software", 100000)
+    )
+    print("6. Servicio de asesoría registrado.")
+
+    # Operación 7: intento de crear servicio con tarifa inválida.
+    try:
+        ReservaSala("S004", "Sala económica", -1000)
+    except DatosInvalidosError as error:
+        print("7. Creación de servicio inválida controlada:", error)
+        logging.warning("Intento de servicio inválido: %s", error)
+
+    # Operación 8: crear y confirmar una reserva válida.
+    reserva1 = sistema.crear_reserva("R001", cliente1, sala, 2)
+    reserva1.confirmar()
+    print("8. Reserva R001 creada y confirmada.")
+
+    # Operación 9: procesar la reserva con impuesto del 19%.
+    costo = reserva1.procesar(impuesto=19)
+    print(f"9. Reserva R001 procesada. Total con impuesto: ${costo:,.0f}")
+
+    # Operación 10: crear y confirmar alquiler de equipo con descuento.
+    reserva2 = sistema.crear_reserva("R002", cliente2, equipo, 3)
+    reserva2.confirmar()
+    costo = reserva2.procesar(descuento=10)
+    print(f"10. Reserva R002 procesada con descuento. Total: ${costo:,.0f}")
+
+    # Operación 11: crear una reserva con duración incorrecta.
+    try:
+        sistema.crear_reserva("R003", cliente1, asesoria, 0)
+    except DatosInvalidosError as error:
+        print("11. Reserva con duración inválida controlada:", error)
+        logging.warning("Intento de reserva inválida: %s", error)
+
+    # Operación 12: intentar procesar una reserva sin confirmarla.
+    reserva3 = sistema.crear_reserva("R004", cliente1, asesoria, 1)
+    try:
+        reserva3.procesar()
+    except ReservaError as error:
+        print("12. Procesamiento sin confirmar controlado:", error)
+        print("    Excepción original encadenada:", repr(error.__cause__))
+
+    # Operación 13: servicio no disponible.
+    servicio_no_disponible = ReservaSala(
+        "S005", "Sala ocupada", 60000, disponible=False
+    )
+    try:
+        sistema.crear_reserva("R005", cliente2, servicio_no_disponible, 1)
+    except ServicioNoDisponibleError as error:
+        print("13. Servicio no disponible controlado:", error)
+        logging.warning("Intento de reservar servicio no disponible: %s", error)
+
+    # Operación 14: cancelar una reserva.
+    reserva2.cancelar()
+    print("14. Reserva R002 cancelada correctamente.")
+
+    # Operación 15: intentar confirmar una reserva cancelada.
+    try:
+        reserva2.confirmar()
+    except ReservaError as error:
+        print("15. Operación no permitida controlada:", error)
+        logging.warning("Operación no permitida: %s", error)
+
+    # Operación 16: demostrar try/except/else/finally.
+    print("\n16. Validación usando try/except/else/finally:")
+    try:
+        valor = float("25000")
+    except ValueError as error:
+        print("No se pudo convertir el valor:", error)
+    else:
+        print("Conversión realizada correctamente:", valor)
+    finally:
+        print("La validación terminó y el programa continúa.")
