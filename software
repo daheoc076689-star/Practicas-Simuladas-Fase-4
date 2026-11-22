@@ -34,3 +34,23 @@ class ServicioNoDisponibleError(SistemaFJError):
 class ReservaError(SistemaFJError):
     """Se presenta cuando una reserva no puede procesarse."""
     pass
+
+# CLASE ABSTRACTA GENERAL
+
+class Entidad(ABC):
+    """Representa una entidad general que debe tener un identificador."""
+
+    def __init__(self, identificador):
+        if not str(identificador).strip():
+            raise DatosInvalidosError("El identificador no puede estar vacío.")
+        self._identificador = str(identificador)
+
+    @property
+    def identificador(self):
+        """Permite consultar el identificador sin modificarlo directamente."""
+        return self._identificador
+
+    @abstractmethod
+    def mostrar_informacion(self):
+        """Cada entidad concreta debe implementar este método."""
+        pass
