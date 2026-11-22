@@ -130,3 +130,38 @@ class Servicio(Entidad):
     def mostrar_informacion(self):
         estado = "Disponible" if self.disponible else "No disponible"
         return f"{self.nombre} - Tarifa: ${self.tarifa:,.0f} - {estado}"
+
+# SERVICIOS ESPECIALIZADOS: HERENCIA Y POLIMORFISMO
+
+class ReservaSala(Servicio):
+    """Servicio de alquiler de salas por hora."""
+
+    def calcular_costo(self, duracion, impuesto=0, descuento=0):
+        self.validar_parametros(duracion)
+        subtotal = self.tarifa * duracion
+        return subtotal + (subtotal * impuesto / 100) - (subtotal * descuento / 100)
+
+    def describir(self):
+        return "Reserva de sala por horas para reuniones o actividades."
+
+class AlquilerEquipo(Servicio):
+    """Servicio de alquiler de equipos por día."""
+
+    def calcular_costo(self, duracion, impuesto=0, descuento=0):
+        self.validar_parametros(duracion)
+        subtotal = self.tarifa * duracion
+        return subtotal + (subtotal * impuesto / 100) - (subtotal * descuento / 100)
+
+    def describir(self):
+        return "Alquiler de equipos tecnológicos por días."
+
+class AsesoriaEspecializada(Servicio):
+    """Servicio de asesoría especializada por hora."""
+
+    def calcular_costo(self, duracion, impuesto=0, descuento=0):
+        self.validar_parametros(duracion)
+        subtotal = self.tarifa * duracion
+        return subtotal + (subtotal * impuesto / 100) - (subtotal * descuento / 100)
+
+    def describir(self):
+        return "Asesoría especializada brindada por personal capacitado."
