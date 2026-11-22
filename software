@@ -165,3 +165,65 @@ class AsesoriaEspecializada(Servicio):
 
     def describir(self):
         return "Asesoría especializada brindada por personal capacitado."
+
+# CLASE RESERVA
+
+class Reserva(Entidad):
+    """Relaciona un cliente con un servicio, una duración y un estado."""
+
+    ESTADOS_VALIDOS = ("Pendiente", "Confirmada", "Cancelada")
+
+    def __init__(self, identificador, cliente, servicio, duracion):
+        super().__init__(identificador)
+        if not isinstance(cliente, Cliente):
+            raise DatosInvalidosError("La reserva debe tener un cliente válido.")
+        if not isinstance(servicio, Servicio):
+            raise DatosInvalidosError("La reserva debe tener un servicio válido.")
+        servicio.validar_parametros(duracion)
+
+        self.cliente = cliente
+        self.servicio = servicio
+        self.duracion = duracion
+        self.estado = "Pendiente"
+        self.costo = 0.0
+
+    def confirmar(self):
+        if self.estado != "Pendiente":
+            raise ReservaError("Solo se pueden confirmar reservas pendientes.")
+        self.servicio.validar_parametros(self.duracion)
+        self.estado = "Confirmada"
+        logging.info("Reserva %s confirmada.", self.identificador)
+
+    def cancelar(self):
+        if self.estado == "Cancelada":
+            raise ReservaError("La reserva ya se encuentra cancelada.")
+        self.estado = "Cancelada"
+        logging.info("Reserva %s cancelada.", self.identificador)
+
+    def procesar(self, impuesto=0, descuento=0):
+        """Procesa la reserva y registra el costo; demuestra encadenamiento."""
+        try:
+            if self.estado != "Confirmada":
+                raise ValueError("La reserva debe estar confirmada antes de procesarse.")
+            self.costo = self.servicio.calcular_costo(
+                self.duracion, impuesto, descuento
+            )
+            logging.info(
+                "Reserva %s procesada. Costo: %.2f",
+                self.identificador, self.costo
+            )
+            return self.costo
+        except (ValueError, SistemaFJError) as error:
+            logging.exception("Error al procesar la reserva %s.", self.identificador)
+            # Encadenamiento: la excepción original queda asociada a ReservaError.
+            raise ReservaError("No fue posible procesar la reserva.") from error
+        finally:
+            logging.info("Finalizó el intento de procesamiento de reserva %s.",
+                         self.identificador)
+
+    def mostrar_informacion(self):
+        return (
+            f"Reserva {self.identificador} | Cliente: {self.cliente.nombre} | "
+            f"Servicio: {self.servicio.nombre} | Duración: {self.duracion} | "
+            f"Estado: {self.estado} | Costo: ${self.costo:,.0f}"
+        )
