@@ -16,3 +16,21 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     encoding="utf-8"
 )
+
+# EXCEPCIONES PERSONALIZADAS
+
+class SistemaFJError(Exception):
+    """Excepción general para los errores controlados del sistema."""
+    pass
+
+class DatosInvalidosError(SistemaFJError):
+    """Se presenta cuando los datos ingresados no cumplen las reglas."""
+    pass
+
+class ServicioNoDisponibleError(SistemaFJError):
+    """Se presenta cuando se intenta reservar un servicio no disponible."""
+    pass
+
+class ReservaError(SistemaFJError):
+    """Se presenta cuando una reserva no puede procesarse."""
+    pass
